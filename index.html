@@ -29,16 +29,16 @@
   </form>
 </div>
 <?php
-		$serverName="tcp:applicationtest.database.windows.net";
+$serverName="tcp:applicationtest.database.windows.net";
 $connectionOptions = array(  
-    "Database" => "ApplicationTest",  
-    "UID" => "DemoTest",  
-    "PWD" => "Test");
+"Database" => "ApplicationTest",  
+"UID" => "DemoTest",  
+"PWD" => "Test");
 $conn = sqlsrv_connect($serverName, $connectionOptions);
 if ($conn === false)  
     {  
     die(print_r(sqlsrv_errors() , true));  
     } 
 ?>
-<body>
+</body>
 </html>
