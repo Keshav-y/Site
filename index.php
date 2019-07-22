@@ -1,8 +1,23 @@
 <?php
-$serverName="tcp:applicationtest.database.windows.net";
-$connectionOptions = array(  
-"Database" => "ApplicationTest",  
-"UID" => "DemoTest",  
-"PWD" => "Test");
-$conn = sqlsrv_connect($serverName, $connectionOptions);
+$servername = "applicationtest.database.windows.net";
+$username = "DemoTest";
+$password = "Test";
+$dbname = "ApplicationTest";
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+} 
+
+$sql = "INSERT INTO [dbo].test (Name)
+VALUES ('Name')";
+
+if ($conn->query($sql) === TRUE) {
+    echo "New record created successfully";
+} else {
+    echo "Error: " . $sql . "<br>" . $conn->error;
+}
+$conn->close();
 ?>
