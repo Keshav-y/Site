@@ -22,7 +22,7 @@
         grecaptcha.ready(function() {
             // do request for recaptcha token
             // response is promise with passed token
-            grecaptcha.execute('6Lev2q4UAAAAAI-sRxrKXF9YgjM6RpYrUdMn81gR', {action: 'create_comment'}).then(function(token) {
+            grecaptcha.execute('6LcLJK8UAAAAADfXOnxiVeOGlEZVHX2B_TZxJ-n1', {action: 'create_comment'}).then(function(token) {
                 // add token to form
                 $('#comment_form').prepend('<input type="hidden" name="g-recaptcha-response" value="' + token + '">');
                     $.post("form.php",{email: email, comment: comment, token: token}, function(result) {
