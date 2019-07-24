@@ -1,41 +1,99 @@
 <html>
-  <head>
-    <title>Google recapcha v3 demo - Codeforgeek</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-      <script src="https://www.google.com/recaptcha/api.js?render=put your site key here"></script>
-  </head>
-  <body>
-    <h1>Google reCAPTHA Demo</h1>
-    <form id="comment_form" action="https://applicationtest1.000webhostapp.com/index.php" method="post" >
-      <input type="email" name="email" placeholder="Type your email" size="40"><br><br>
-      <textarea name="comment" rows="8" cols="39"></textarea><br><br>
-      <input type="submit" name="submit" value="Post comment"><br><br>
-    </form>
-      <script>
-       // when form is submit
-    $('#comment_form').submit(function() {
-        // we stoped it
-        event.preventDefault();
-        var email = $('#email').val();
-        var comment = $("#comment").val();
-        // needs for recaptacha ready
-        grecaptcha.ready(function() {
-            // do request for recaptcha token
-            // response is promise with passed token
-            grecaptcha.execute('6LcLJK8UAAAAADfXOnxiVeOGlEZVHX2B_TZxJ-n1', {action: 'create_comment'}).then(function(token) {
-                // add token to form
-                $('#comment_form').prepend('<input type="hidden" name="g-recaptcha-response" value="' + token + '">');
-                    $.post("form.php",{email: email, comment: comment, token: token}, function(result) {
-                            console.log(result);
-                            if(result.success) {
-                                    alert('Thanks for posting comment.')
-                            } else {
-                                    alert('You are spammer ! Get the @$%K out.')
-                            }
-                    });
-            });;
-        });
-  });
-  </script>
-  </body>
+<head>
+<Title>Azure SQL Database - PHP Website</Title>
+<meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+ <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+ <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+ <script src="https://www.google.com/recaptcha/api.js"></script>
+</head>
+<body>
+    <div class="container">
+ <div class="text-center">
+ <img src="\MAQSoftware.png" class="rounded mx-auto d-block" alt="MAQ Software">
+ </div>
+ <h2><center>Background Verification Form</h2></center>
+ <form method="post" action="?action=get" enctype="multipart/form-data">
+ <div class="form-group">
+ <label for="email">Employee Id:</label>
+ <input type="text" class="form-control" id="employeeid" placeholder="Enter your Employee ID at MAQ Software" name="employeeid">
+ </div>
+ <div class="g-recaptcha" data-sitekey=6LcmGq8UAAAAAHX4g751oDyREvZ6SfAVQL1WaIWI></div>
+ <br><button type="submit" class="btn btn-default">Submit</button>
+ </form>
+<?php
+/*Connect using SQL Server authentication.*/
+$serverName = "maqbgv.database.windows.net,1433";
+$connectionOptions = array("Database"=>"exitedemployee",
+                           "UID"=>getenv("SQLUserName"),
+                           "PWD" =>getenv("Password"));
+$conn = sqlsrv_connect($serverName, $connectionOptions);
+if($conn === false)
+{
+    
+    die(print_r(sqlsrv_errors(), true));
+}
+if(isset($_GET['action']))
+{
+             if($_GET['action'] == 'get')
+                {
+                     if(isset($_POST['g-recaptcha-response']) && !empty($_POST['g-recaptcha-response']))
+    {
+         $secretKey = '6LcmGq8UAAAAAAzTgckUd1micxTSiBeKswizVEsi';
+         $verifyResponse = file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret='.$secretKey.'&response='.$_POST['g-recaptcha-response']);
+         $responseData = json_decode($verifyResponse);
+         if($responseData->success)
+                {
+                   
+                    $Empid=$_POST['employeeid'];
+                    
+                    $sql ="select [Employee ID], [Employee Name], [Designation],[Location]
+                        , CONVERT(nvarchar,CONVERt(date,[Joining Date])) AS [Joining Date]
+                            , [Last Working Date with MAQ] AS [Last Working Date with MAQ]
+                         from [dbo].[Exited] where [Employee ID]=?";
+                    $params = array(&$Empid);  
+                    
+                    $dataStmt = sqlsrv_query($conn,$sql,$params);
+                    
+                    if($dataStmt === false)
+                    {
+                    
+                        die(print_r(sqlsrv_errors(), true));
+                    }
+                  
+                    if(sqlsrv_has_rows($dataStmt))
+                    {
+                        print("<table class='table table-bordered'>");
+                        print("<tr><td>Employee ID</td>");
+                        print("<td>Employee name</td>");
+                        print("<td>Designation</td>");
+                        print("<td>Location</td>");
+                        print("<td>Joining Date</td>");
+                        print("<td>Last working date with MAQ</td></tr>");
+               
+                        while($row = sqlsrv_fetch_array($dataStmt))
+                        {
+                            print("<tr><td>".$row['Employee ID']."</td>");
+                            print("<td>".$row['Employee Name']."</td>");
+                            print("<td>".$row['Designation']."</td>");
+                            print("<td>".$row['Location']."</td>");
+                            print("<td>".$row['Joining Date']."</td>");
+                            print("<td>".$row['Last Working Date with MAQ']."</td></tr>");
+                            print("</table>");
+                        }      
+                    }    
+           
+        
+                }
+    }
+         }
+    
+}
+?>
+</body>
 </html>
